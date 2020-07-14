@@ -2901,6 +2901,12 @@ INSTALLED_VENDORIMAGE_TARGET := $(PRODUCT_OUT)/vendor.img
 $(eval $(call copy-one-file,$(BOARD_PREBUILT_VENDORIMAGE),$(INSTALLED_VENDORIMAGE_TARGET)))
 endif
 
+ifdef BOARD_PREBUILT_RECOVERYIMAGE
+INSTALLED_RECOVERYIMAGE_TARGET := $(PRODUCT_OUT)/recovery.img
+INSTALLED_PREBUILT_RECOVERYIMAGE := $(PRODUCT_OUT)/recovery.img
+$(eval $(call copy-one-file,$(BOARD_PREBUILT_RECOVERYIMAGE),$(INSTALLED_PREBUILT_RECOVERYIMAGE)))
+endif
+
 ifdef BOARD_PREBUILT_IMAGES
 
 # BOARD_PREBUILT_IMAGES: list of items like "bluetooth", "firmware", etc
@@ -4235,6 +4241,10 @@ endif
 ifdef BOARD_PREBUILT_ODMIMAGE
 	$(hide) mkdir -p $(zip_root)/IMAGES
 	$(hide) cp $(INSTALLED_ODMIMAGE_TARGET) $(zip_root)/IMAGES/
+endif
+ifdef BOARD_PREBUILT_RECOVERYIMAGE
+	$(hide) mkdir -p $(zip_root)/IMAGES
+	$(hide) cp $(INSTALLED_PREBUILT_RECOVERYIMAGE) $(zip_root)/IMAGES/
 endif
 ifdef INSTALLED_DTBOIMAGE_TARGET
 	$(hide) mkdir -p $(zip_root)/PREBUILT_IMAGES
