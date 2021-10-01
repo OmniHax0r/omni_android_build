@@ -1262,6 +1262,8 @@ INTERNAL_MKBOOTIMG_VERSION_ARGS := \
 ifdef BUILDING_BOOT_IMAGE
 INSTALLED_BOOTIMAGE_TARGET := $(BUILT_BOOTIMAGE_TARGET)
 
+ifndef BOARD_CUSTOM_BOOTIMG_MK
+
 ifeq ($(TARGET_BOOTIMAGE_USE_EXT2),true)
 $(error TARGET_BOOTIMAGE_USE_EXT2 is not supported anymore)
 
@@ -1345,6 +1347,7 @@ bootimage-nodeps: $(MKBOOTIMG)
 	$(hide) $(call assert-max-image-size,$(INSTALLED_BOOTIMAGE_TARGET),$(BOARD_BOOTIMAGE_PARTITION_SIZE))
 
 endif # TARGET_BOOTIMAGE_USE_EXT2
+endif # BOARD_CUSTOM_BOOTIMG_MK not defined
 endif # BUILDING_BOOT_IMAGE
 
 else # TARGET_NO_KERNEL == "true"
@@ -2346,6 +2349,11 @@ endif
 ifneq ($(BOARD_NAND_SPARE_SIZE),)
 $(error MTD device is no longer supported and thus BOARD_NAND_SPARE_SIZE is deprecated.)
 endif
+
+ifdef BOARD_CUSTOM_BOOTIMG_MK
+include $(BOARD_CUSTOM_BOOTIMG_MK)
+endif
+
 
 ifneq ($(BOARD_BUILD_SYSTEM_ROOT_IMAGE),true)
 # -----------------------------------------------------------------
@@ -4768,6 +4776,12 @@ ifdef BOARD_KERNEL_PAGESIZE
 endif
 	echo "$(INTERNAL_KERNEL_CMDLINE)" > $(zip_root)/VENDOR_BOOT/vendor_cmdline
 endif # INSTALLED_VENDOR_BOOTIMAGE_TARGET
+ifdef BOARD_CUSTOM_BOOTIMG
+	@# Prebuilt boot images
+	$(hide) mkdir -p $(zip_root)/BOOTABLE_IMAGES
+	$(hide) $(ACP) $(INSTALLED_BOOTIMAGE_TARGET) $(zip_root)/BOOTABLE_IMAGES/
+	$(hide) $(ACP) $(INSTALLED_RECOVERYIMAGE_TARGET) $(zip_root)/BOOTABLE_IMAGES/
+endif
 ifdef BUILDING_SYSTEM_IMAGE
 	@# Contents of the system image
 	$(hide) $(call package_files-copy-root, \
